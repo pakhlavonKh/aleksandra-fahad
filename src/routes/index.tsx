@@ -545,15 +545,6 @@ function RSVP() {
             </div>
           </div>
 
-          <div>
-            <Label>Особые пожелания / диета</Label>
-            <textarea
-              rows={3}
-              className="w-full mt-3 bg-transparent border-b hairline border-border focus:border-foreground outline-none py-3 font-mono text-sm tracking-[0.05em] resize-none"
-              placeholder="—"
-            />
-          </div>
-
           <div className="pt-6 border-t hairline border-border flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="font-mono text-[9px] tracking-[0.3em] uppercase text-muted-foreground">
               Подпись: ___________________ &nbsp; · &nbsp; Дата: 09 · 08 · 2026
@@ -602,14 +593,14 @@ function SectionLabel({
   inverted?: boolean;
 }) {
   return (
-    <div className="reveal flex items-end justify-between gap-8 border-b hairline pb-6" style={{ borderColor: inverted ? "rgba(255,255,255,0.15)" : undefined }}>
-      <div>
-        <div className={`font-mono text-[10px] tracking-[0.4em] uppercase ${inverted ? "text-white/40" : "text-muted-foreground"}`}>
+    <div className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-4 md:gap-8 border-b hairline pb-6" style={{ borderColor: inverted ? "rgba(255,255,255,0.15)" : undefined }}>
+      <div className="min-w-0">
+        <div className={`font-mono text-[9px] md:text-[10px] tracking-[0.35em] md:tracking-[0.4em] uppercase ${inverted ? "text-white/40" : "text-muted-foreground"}`}>
           № {index} · {subtitle}
         </div>
-        <h2 className={`font-display text-5xl md:text-6xl mt-3 ${inverted ? "text-paper" : ""}`}>{title}</h2>
+        <h2 className={`font-display text-3xl md:text-5xl lg:text-6xl mt-3 leading-tight md:leading-normal ${inverted ? "text-paper" : ""}`}>{title}</h2>
       </div>
-      <div className={`hidden md:block font-mono text-[9px] tracking-[0.3em] uppercase ${inverted ? "text-white/40" : "text-muted-foreground"}`}>
+      <div className={`hidden md:block font-mono text-[9px] tracking-[0.3em] uppercase ${inverted ? "text-white/40" : "text-muted-foreground"} whitespace-nowrap`}>
         Section {index} / 05
       </div>
     </div>
