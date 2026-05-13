@@ -880,10 +880,13 @@ function Gifts() {
       <SectionLabel index="05" title="Подарки" subtitle="Gift registry" />
 
       <div className="reveal mt-16 bg-card border hairline border-border p-10 md:p-16 text-center">
-        <p className="font-display text-2xl md:text-3xl leading-relaxed text-graphite mb-6">
+        <p className="font-display text-2xl md:text-3xl leading-relaxed text-graphite mb-4">
           Лучший подарок — это ваше присутствие.
         </p>
-        <p className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+        <p className="font-display text-lg md:text-2xl leading-relaxed text-graphite mb-4">
+          Но если вы хотите порадовать нас чем-то ещё...
+        </p>  
+        <p className="font-mono font-semibold text-[16px] tracking-[0.2em] text-muted-foreground max-w-2xl mx-auto leading-relaxed">
           По приглашению вы уже поняли: у нас две главные страсти — друг к другу и интересные
           приключения. ✈️ Поэтому лучшим подарком будет вклад в наш honeymoon fund. Обещаем
           потратить его максимально романтично и местами безответственно. 🌍
