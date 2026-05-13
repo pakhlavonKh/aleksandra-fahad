@@ -40,29 +40,29 @@
 :root {
   --radius: 0.25rem;
   --background: oklch(0.97 0.002 60);
-  --foreground: oklch(0.15 0 0);
-  --card: oklch(0.99 0.001 60);
-  --card-foreground: oklch(0.15 0 0);
-  --popover: oklch(0.99 0.001 60);
-  --popover-foreground: oklch(0.15 0 0);
-  --primary: oklch(0.12 0 0);
+  --foreground: oklch(0.32 0 0);
+  --card: oklch(0.92 0.002 60);
+  --card-foreground: oklch(0.32 0 0);
+  --popover: oklch(0.92 0.002 60);
+  --popover-foreground: oklch(0.32 0 0);
+  --primary: oklch(0.35 0 0);
   --primary-foreground: oklch(0.97 0.002 60);
   --secondary: oklch(0.93 0.002 60);
-  --secondary-foreground: oklch(0.15 0 0);
+  --secondary-foreground: oklch(0.32 0 0);
   --muted: oklch(0.93 0.002 60);
-  --muted-foreground: oklch(0.45 0 0);
+  --muted-foreground: oklch(0.50 0 0);
   --accent: oklch(0.85 0.003 60);
-  --accent-foreground: oklch(0.15 0 0);
+  --accent-foreground: oklch(0.32 0 0);
   --destructive: oklch(0.5 0.15 25);
   --destructive-foreground: oklch(0.97 0 0);
-  --border: oklch(0.85 0.003 60);
+  --border: oklch(0.80 0.003 60);
   --input: oklch(0.85 0.003 60);
-  --ring: oklch(0.45 0 0);
+  --ring: oklch(0.50 0 0);
 
   --paper: oklch(0.96 0.003 70);
-  --ink: oklch(0.1 0 0);
+  --ink: oklch(0.30 0 0);
   --silver: oklch(0.78 0.003 60);
-  --graphite: oklch(0.35 0 0);
+  --graphite: oklch(0.45 0 0);
 }
 
 .dark {
@@ -107,19 +107,19 @@
     background-position: 0 0, 1px 1px;
   }
   .ink-texture {
-    background-color: oklch(0.1 0 0);
+    background-color: oklch(0.40 0 0);
     background-image:
       radial-gradient(oklch(1 0 0 / 0.02) 1px, transparent 1px);
     background-size: 4px 4px;
   }
   .embossed {
     color: transparent;
-    background: linear-gradient(180deg, oklch(0.55 0 0), oklch(0.25 0 0));
+    background: linear-gradient(180deg, oklch(0.50 0 0), oklch(0.32 0 0));
     -webkit-background-clip: text;
     background-clip: text;
     text-shadow:
       0 1px 0 oklch(1 0 0 / 0.04),
-      0 -1px 0 oklch(0 0 0 / 0.5);
+      0 -1px 0 oklch(0.4 0 0 / 0.3);
   }
   .embossed-light {
     color: transparent;
@@ -141,13 +141,13 @@
   .barcode {
     background: repeating-linear-gradient(
       90deg,
-      oklch(0.1 0 0) 0 2px,
+      oklch(0.32 0 0) 0 2px,
       transparent 2px 4px,
-      oklch(0.1 0 0) 4px 5px,
+      oklch(0.32 0 0) 4px 5px,
       transparent 5px 9px,
-      oklch(0.1 0 0) 9px 12px,
+      oklch(0.32 0 0) 9px 12px,
       transparent 12px 14px,
-      oklch(0.1 0 0) 14px 15px,
+      oklch(0.32 0 0) 14px 15px,
       transparent 15px 18px
     );
   }
@@ -159,7 +159,7 @@
   }
   .stamp {
     border: 2px solid currentColor;
-    color: oklch(0.25 0 0);
+    color: oklch(0.40 0 0);
     transform: rotate(-8deg);
     opacity: 0.75;
     filter: contrast(1.1);
@@ -179,4 +179,16 @@
     transition: stroke-dashoffset 2.5s ease-out;
   }
   .draw-line.is-visible { stroke-dashoffset: 0; }
+  .animated-plane {
+    animation: moveAlongPath 4s linear infinite paused;
+  }
+  .animated-plane.is-visible {
+    animation-play-state: running;
+    animation-delay: 1.5s;
+  }
+}
+
+@keyframes moveAlongPath {
+  0% { offset-distance: 0%; }
+  100% { offset-distance: 100%; }
 }

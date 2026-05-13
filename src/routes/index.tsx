@@ -1,11 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { Volume2, VolumeX } from "lucide-react";
 import flatlayImg from "@/assets/boarding-flatlay.jpg";
 import passportImg from "@/assets/passport-portrait.jpg";
 import stampsImg from "@/assets/stamps-detail.jpg";
+import boardingPassImg from "@/assets/pass.png";
+import map from "@/assets/map.png";
+import plane from "@/assets/plane.png";
+import takeOff from "@/assets/takeOff.mp3";
 
 function useReveal() {
   useEffect(() => {
-    const els = document.querySelectorAll(".reveal, .draw-line");
+    const els = document.querySelectorAll(".reveal, .draw-line, .animated-plane");
     if (typeof IntersectionObserver === "undefined") {
       els.forEach((el) => el.classList.add("is-visible"));
       return;
@@ -44,10 +49,55 @@ function useReveal() {
 
 export default function Index() {
   const [opened, setOpened] = useState(false);
+  const [audioMuted, setAudioMuted] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
   useReveal();
+
+  useEffect(() => {
+    // Play audio on mount/reload
+    const playAudio = () => {
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(() => {
+          console.log("Autoplay blocked by browser - audio muted or requires interaction");
+        });
+      }
+    };
+    
+    // Try to play immediately
+    playAudio();
+    
+    // Try again after a short delay in case element isn't ready
+    const timer = setTimeout(playAudio, 300);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Update mute state
+    if (audioRef.current) {
+      audioRef.current.muted = audioMuted;
+      // Ensure audio continues playing when toggling mute
+      if (!audioMuted && audioRef.current.paused) {
+        audioRef.current.play().catch(() => {
+          console.log("Could not resume audio");
+        });
+      }
+    }
+  }, [audioMuted]);
 
   return (
     <main className="paper-texture min-h-screen text-foreground">
+      <audio ref={audioRef} autoPlay preload="auto" style={{ display: "none" }}>
+        <source src={takeOff} type="audio/mpeg" />
+      </audio>
+      <button
+        onClick={() => setAudioMuted(!audioMuted)}
+        className="fixed bottom-6 right-6 z-50 p-3 hover:text-graphite transition"
+        title={audioMuted ? "Unmute" : "Mute"}
+      >
+        {audioMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+      </button>
       <Nav />
       <Hero opened={opened} setOpened={setOpened} />
       <FlatlayBanner />
@@ -55,7 +105,7 @@ export default function Index() {
       <Journey />
       <Destination />
       <LoveStory />
-      <RSVP />
+      <CountdownAndCalendar />
       <Footer />
     </main>
   );
@@ -84,7 +134,7 @@ function Hero({ opened, setOpened }: { opened: boolean; setOpened: (v: boolean) 
     <section className="min-h-screen flex flex-col items-center justify-center px-6 pt-24 pb-16 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{
         backgroundImage:
-          "radial-gradient(circle at 20% 30%, #000 0, transparent 40%), radial-gradient(circle at 80% 70%, #000 0, transparent 40%)",
+          "radial-gradient(circle at 20% 30%, oklch(0.5 0 0) 0, transparent 40%), radial-gradient(circle at 80% 70%, oklch(0.5 0 0) 0, transparent 40%)",
       }} />
 
       <div className="font-mono text-[10px] tracking-[0.4em] uppercase text-muted-foreground mb-12 reveal">
@@ -103,7 +153,7 @@ function Hero({ opened, setOpened }: { opened: boolean; setOpened: (v: boolean) 
 
         {/* Passport */}
         <div
-          className="absolute inset-0 ink-texture rounded-sm shadow-[0_30px_80px_-20px_rgba(0,0,0,0.55)] border hairline border-white/10 transition-transform duration-[1400ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+          className="absolute inset-0 ink-texture rounded-sm shadow-[0_30px_80px_-20px_rgba(120,120,120,0.3)] border hairline border-white/10 transition-transform duration-[1400ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
           style={{
             transformOrigin: "left center",
             transform: opened ? "rotateY(-22deg) translateX(-8%)" : "rotateY(0deg)",
@@ -187,12 +237,12 @@ function BoardingPass() {
       <div className="reveal mt-16 grid grid-cols-1 md:grid-cols-[280px_1fr] gap-10 mb-12 items-end">
         <figure className="relative">
           <img
-            src={passportImg}
+            src={boardingPassImg}
             alt="Свадебный паспорт с компасом"
             loading="lazy"
             width={1024}
             height={1024}
-            className="w-full aspect-square object-cover grayscale shadow-[0_30px_60px_-25px_rgba(0,0,0,0.45)]"
+            className="w-full aspect-square object-cover grayscale shadow-[0_30px_60px_-25px_rgba(120,120,120,0.25)]"
           />
           <figcaption className="mt-3 font-mono text-[9px] tracking-[0.35em] uppercase text-muted-foreground">
             Образец · Specimen 01
@@ -204,7 +254,7 @@ function BoardingPass() {
         </p>
       </div>
 
-      <div className="reveal grid grid-cols-1 lg:grid-cols-[1fr_auto] bg-card border hairline border-border shadow-[0_40px_80px_-30px_rgba(0,0,0,0.25)]">
+      <div className="reveal grid grid-cols-1 lg:grid-cols-[1fr_auto] bg-card border hairline border-border shadow-[0_40px_80px_-30px_rgba(120,120,120,0.15)]">
         {/* Main */}
         <div className="p-10 lg:p-14 relative">
           <div className="flex items-start justify-between border-b hairline border-border pb-6">
@@ -384,61 +434,63 @@ function Destination() {
 
 function Map() {
   return (
-    <svg viewBox="0 0 400 400" className="w-full h-full">
-      <defs>
-        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="oklch(0.85 0 0)" strokeWidth="0.3" />
-        </pattern>
-      </defs>
-      <rect width="400" height="400" fill="url(#grid)" />
-      {/* river */}
-      <path
-        d="M0 240 C 80 220, 140 280, 220 250 S 360 220, 400 260"
-        fill="none"
-        stroke="oklch(0.6 0 0)"
-        strokeWidth="8"
-        opacity="0.3"
+    <div className="relative w-full h-full overflow-hidden bg-gray-200">
+      {/* Map background image - using Google Maps Static API */}
+      <img
+        src={map}
+        alt="Map background"
+        className="absolute inset-0 w-full h-full object-cover"
       />
-      <path
-        d="M0 240 C 80 220, 140 280, 220 250 S 360 220, 400 260"
-        fill="none"
-        stroke="oklch(0.4 0 0)"
-        strokeWidth="0.5"
-      />
-      {/* roads */}
-      <path d="M50 50 L 350 350" stroke="oklch(0.7 0 0)" strokeWidth="0.5" />
-      <path d="M350 50 L 50 350" stroke="oklch(0.7 0 0)" strokeWidth="0.5" />
-      <path d="M200 0 L 200 400" stroke="oklch(0.7 0 0)" strokeWidth="0.5" />
-      <path d="M0 200 L 400 200" stroke="oklch(0.7 0 0)" strokeWidth="0.5" />
-      {/* dotted route */}
-      <path
-        className="draw-line"
-        d="M60 80 Q 180 140 200 240"
-        fill="none"
-        stroke="oklch(0.15 0 0)"
-        strokeWidth="1.5"
-        strokeDasharray="4 4"
-      />
-      {/* origin */}
-      <circle cx="60" cy="80" r="4" fill="oklch(0.15 0 0)" />
-      <text x="70" y="78" fontSize="9" fontFamily="monospace" fill="oklch(0.15 0 0)">START</text>
-      {/* destination */}
-      <g transform="translate(200,240)">
-        <circle r="14" fill="none" stroke="oklch(0.15 0 0)" strokeWidth="1" />
-        <circle r="6" fill="oklch(0.15 0 0)" />
-        <text y="34" fontSize="9" fontFamily="monospace" fill="oklch(0.15 0 0)" textAnchor="middle">Lago Park</text>
-      </g>
-    </svg>
+      
+      {/* Overlay SVG for route and plane */}
+      <svg viewBox="0 0 400 400" className="absolute inset-0 w-full h-full">
+        <defs>
+          <path id="route" d="M60 80 Q 180 140 245 220" fill="none" />
+        </defs>
+        
+        {/* dotted route */}
+        <path
+          className="draw-line"
+          d="M60 80 Q 180 140 245 220"
+          fill="none"
+          stroke="oklch(0.65 0 0)"
+          strokeWidth="2"
+          strokeDasharray="6 4"
+        />
+        
+        {/* origin */}
+        <circle cx="60" cy="80" r="5" fill="oklch(0.65 0 0)" />
+        <text x="70" y="78" fontSize="10" fontFamily="monospace" fill="oklch(0.65 0 0)" fontWeight="bold">START</text>
+        
+        {/* destination */}
+        <g transform="translate(245,220)">
+          <circle r="14" fill="none" stroke="oklch(0.65 0 0)" strokeWidth="2" />
+          <circle r="6" fill="oklch(0.65 0 0)" />
+          <text y="32" fontSize="10" fontFamily="monospace" fill="oklch(0.65 0 0)" textAnchor="middle" fontWeight="bold">Lago Park</text>
+        </g>
+        
+        {/* flying plane - CSS animated */}
+        <image 
+          className="animated-plane"
+          href={plane}
+          x="-12" y="-12" width="32" height="32" 
+          style={{
+            offsetPath: 'path("M60 80 Q 180 140 245 220")',
+            offsetDistance: '0%',
+          } as React.CSSProperties}
+        />
+      </svg>
+    </div>
   );
 }
 
 /* ---------------- Love Story ---------------- */
 function LoveStory() {
   const stamps = [
-    { year: "2019", place: "PARIS", note: "Первая встреча в кафе на Монмартре." },
-    { year: "2021", place: "ROMA", note: "Первое путешествие вдвоём." },
-    { year: "2023", place: "TOKYO", note: "«Да» под цветущей сакурой." },
-    { year: "2024", place: "REYKJAVIK", note: "Помолвка под северным сиянием." },
+    { year: "2016", place: "ТАШКЕНТ", note: "Встреча в цирке, где мы оба работали аниматорами — Дед Мороз и Снегурочка. Любовь с первого взгляда." },
+    { year: "2024", place: "ВЬЕТНАМ", note: "Первое путешествие вдвоём. Каждый город, каждый момент казался чарованным — мы поняли, что готовы бежать в мир вместе." },
+    { year: "2024", place: "ВЬЕТНАМ", note: "На палубе корабля, под звёздами южного неба Вьетнама, я услышал самое важное в жизни «Да»." },
+    { year: "2026", place: "LAGO PARK", note: "26 июня 2026 года начнется наша главная история — история одной любви, одного дыхания, одной вечности." },
   ];
   return (
     <section id="story" className="py-32 px-6 max-w-6xl mx-auto">
@@ -456,9 +508,9 @@ function LoveStory() {
         />
         <div className="relative grid grid-cols-1 md:grid-cols-2 gap-12">
           {stamps.map((s, i) => (
-            <div key={i} className="flex gap-6 items-start">
+            <div key={i} className="flex flex-col md:flex-row gap-6 md:items-start items-center">
               <Stamp text={s.place} year={s.year} />
-              <div className="pt-2">
+              <div className="pt-2 text-center md:text-left">
                 <div className="font-mono text-[10px] tracking-[0.35em] uppercase text-muted-foreground">{s.year} · Visa</div>
                 <p className="font-display text-2xl leading-snug mt-2">{s.note}</p>
               </div>
@@ -488,94 +540,131 @@ function Stamp({ text, year }: { text: string; year: string }) {
   );
 }
 
-/* ---------------- RSVP ---------------- */
-function RSVP() {
-  const [submitted, setSubmitted] = useState(false);
+/* ---------------- Countdown & Calendar ---------------- */
+function CountdownAndCalendar() {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const weddingDate = new Date("2026-06-26T16:00:00").getTime();
+      const now = new Date().getTime();
+      const difference = weddingDate - now;
+
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        });
+      }
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const weddingDate = new Date("2026-06-26");
+  const daysInMonth = new Date(2026, 5, 0).getDate();
+  const firstDayOfMonth = new Date(2026, 5, 1).getDay();
+  const calendarDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
   return (
-    <section id="rsvp" className="py-32 px-6">
-      <div className="max-w-3xl mx-auto">
-        <SectionLabel index="05" title="Подтверждение посадки" subtitle="Immigration form" />
+    <section id="countdown" className="py-32 px-6">
+      <div className="max-w-4xl mx-auto">
+        <SectionLabel index="05" title="Обратный отсчёт" subtitle="Countdown" />
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            setSubmitted(true);
-          }}
-          className="reveal mt-16 bg-card border hairline border-border p-10 md:p-14 space-y-10"
-        >
-          <div className="flex items-start justify-between border-b hairline border-border pb-6">
-            <div>
-              <div className="font-mono text-[9px] tracking-[0.4em] uppercase text-muted-foreground">Form AN-2026</div>
-              <div className="font-display text-2xl mt-1">Декларация гостя</div>
+        {/* Countdown */}
+        <div className="reveal mt-16 bg-card border hairline border-border p-10 md:p-16 mb-16">
+          <div className="text-center mb-8">
+            <div className="font-mono text-[10px] tracking-[0.4em] uppercase text-muted-foreground mb-4">
+              До момента истины
             </div>
-            <div className="font-mono text-[9px] tracking-[0.3em] uppercase text-muted-foreground text-right">
-              Заполните<br />печатными буквами
+            <div className="grid grid-cols-4 gap-4 md:gap-8">
+              <CountdownUnit value={timeLeft.days} label="дней" />
+              <CountdownUnit value={timeLeft.hours} label="часов" />
+              <CountdownUnit value={timeLeft.minutes} label="минут" />
+              <CountdownUnit value={timeLeft.seconds} label="секунд" />
             </div>
           </div>
+          <div className="text-center pt-8 border-t hairline border-border">
+            <div className="font-display text-2xl md:text-3xl text-graphite">
+              26 · 06 · 2026 · 16:00
+            </div>
+          </div>
+        </div>
 
-          <FormRow label="Фамилия и имя" placeholder="ИВАНОВ ИВАН" />
-          <FormRow label="Электронная почта" placeholder="EMAIL@DOMAIN.COM" type="email" />
-          <FormRow label="Телефон" placeholder="+7 (000) 000-00-00" type="tel" />
+        {/* Calendar */}
+        <div className="reveal bg-card border hairline border-border p-10 md:p-16">
+          <div className="max-w-md mx-auto">
+            <div className="text-center mb-10">
+              <div className="font-mono text-[10px] tracking-[0.4em] uppercase text-muted-foreground mb-2">
+                Июнь
+              </div>
+              <div className="font-display text-3xl">2026</div>
+            </div>
 
-          <div>
-            <Label>Количество персон</Label>
-            <div className="flex gap-3 mt-3">
-              {["01", "02", "03", "04+"].map((n) => (
-                <label key={n} className="flex-1">
-                  <input type="radio" name="ppl" className="peer sr-only" defaultChecked={n === "01"} />
-                  <div className="border hairline border-border py-4 text-center font-mono text-sm tracking-[0.2em] cursor-pointer peer-checked:bg-foreground peer-checked:text-paper transition">
-                    {n}
-                  </div>
-                </label>
+            {/* Weekday headers */}
+            <div className="grid grid-cols-7 gap-2 mb-4">
+              {["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"].map((day) => (
+                <div key={day} className="text-center font-mono text-[9px] tracking-[0.3em] uppercase text-muted-foreground py-2">
+                  {day}
+                </div>
               ))}
             </div>
-          </div>
 
-          <div>
-            <Label>Подтверждаю присутствие</Label>
-            <div className="grid grid-cols-2 gap-3 mt-3">
-              {["Да, лечу", "К сожалению, нет"].map((n, i) => (
-                <label key={n} className="block">
-                  <input type="radio" name="att" className="peer sr-only" defaultChecked={i === 0} />
-                  <div className="border hairline border-border py-4 text-center font-mono text-[11px] tracking-[0.25em] uppercase cursor-pointer peer-checked:bg-foreground peer-checked:text-paper transition">
-                    {n}
-                  </div>
-                </label>
+            {/* Calendar days */}
+            <div className="grid grid-cols-7 gap-2">
+              {/* Empty cells for days before month starts */}
+              {Array.from({ length: firstDayOfMonth }).map((_, i) => (
+                <div key={`empty-${i}`} />
+              ))}
+              {/* Calendar days */}
+              {calendarDays.map((day) => (
+                <div key={day} className="aspect-square flex items-center justify-center relative">
+                  {day === 26 ? (
+                    <div className="relative w-full h-full flex items-center justify-center">
+                      <svg className="w-full h-full text-foreground" viewBox="0 0 40 40" fill="currentColor">
+                        <path d="M20 35 C 5 25, 0 18, 0 12 C 0 6, 5 2, 9 2 C 13 2, 16 5, 20 9 C 24 5, 27 2, 31 2 C 35 2, 40 6, 40 12 C 40 18, 35 25, 20 35 Z" />
+                      </svg>
+                      <span className="absolute font-mono text-xs tracking-[0.1em] text-paper font-bold">
+                        {String(day).padStart(2, "0")}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="border hairline border-border rounded-sm w-full h-full flex items-center justify-center font-mono text-sm tracking-[0.1em] text-foreground hover:bg-card/50 transition">
+                      {String(day).padStart(2, "0")}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
-          </div>
 
-          <div className="pt-6 border-t hairline border-border flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="font-mono text-[9px] tracking-[0.3em] uppercase text-muted-foreground">
-              Подпись: ___________________ &nbsp; · &nbsp; Дата: 09 · 08 · 2026
+            <div className="mt-8 text-center font-mono text-[9px] tracking-[0.3em] uppercase text-muted-foreground">
+              The big day
             </div>
-            <button
-              type="submit"
-              className="font-mono text-[11px] tracking-[0.4em] uppercase px-10 py-4 bg-foreground text-paper hover:bg-graphite transition-colors duration-500"
-            >
-              {submitted ? "Посадка подтверждена ✓" : "Подтвердить посадку"}
-            </button>
           </div>
-        </form>
+        </div>
       </div>
     </section>
   );
 }
 
-function Label({ children }: { children: React.ReactNode }) {
-  return <div className="font-mono text-[9px] tracking-[0.4em] uppercase text-muted-foreground">{children}</div>;
-}
-
-function FormRow({ label, placeholder, type = "text" }: { label: string; placeholder: string; type?: string }) {
+function CountdownUnit({ value, label }: { value: number; label: string }) {
   return (
-    <div>
-      <Label>{label}</Label>
-      <input
-        type={type}
-        required
-        placeholder={placeholder}
-        className="w-full mt-3 bg-transparent border-b hairline border-border focus:border-foreground outline-none py-3 font-mono text-sm tracking-[0.15em] uppercase placeholder:text-muted-foreground/40"
-      />
+    <div className="flex flex-col items-center">
+      <div className="font-display text-4xl md:text-5xl leading-none mb-2">
+        {String(value).padStart(2, "0")}
+      </div>
+      <div className="font-mono text-[9px] tracking-[0.3em] uppercase text-muted-foreground">
+        {label}
+      </div>
     </div>
   );
 }
