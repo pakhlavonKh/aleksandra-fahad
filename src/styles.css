@@ -32,7 +32,7 @@
   --color-ink: var(--ink);
   --color-silver: var(--silver);
   --color-graphite: var(--graphite);
-  --font-display: "Cormorant Garamond", serif;
+  --font-display: "Playfair Display", serif;
   --font-sans: "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 }
@@ -95,6 +95,7 @@
   }
 
   .font-mono { font-family: var(--font-mono); letter-spacing: 0.05em; }
+  .font-cursive { font-family: "Great Vibes", cursive; font-weight: 400; }
 }
 
 @layer utilities {
@@ -184,7 +185,7 @@
   }
   .animated-plane.is-visible {
     animation-play-state: running;
-    animation-delay: 1.5s;
+    animation-delay: 0.5s;
   }
 }
 
