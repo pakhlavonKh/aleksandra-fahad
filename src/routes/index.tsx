@@ -50,36 +50,52 @@ function useReveal() {
 export default function Index() {
   const [opened, setOpened] = useState(false);
   const [audioMuted, setAudioMuted] = useState(false);
+  const [browserMuted, setBrowserMuted] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
   useReveal();
 
   useEffect(() => {
     // Handle user interaction to start audio
+    let hasPlayed = false;
+    
     const handleInteraction = () => {
-      if (audioRef.current) {
-        audioRef.current.muted = false;
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch((err) => {
-          console.log("Audio play failed:", err.message);
-        });
-        // Remove all listeners after first interaction
-        document.removeEventListener("click", handleInteraction);
-        document.removeEventListener("touchstart", handleInteraction);
-        document.removeEventListener("scroll", handleInteraction);
-        document.removeEventListener("wheel", handleInteraction);
+      if (hasPlayed || !audioRef.current) return;
+      hasPlayed = true;
+      
+      audioRef.current.muted = false;
+      audioRef.current.currentTime = 0;
+      
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            console.log("Audio playing successfully");
+            setBrowserMuted(false);
+            // Remove all listeners after successful play
+            document.removeEventListener("click", handleInteraction);
+            document.removeEventListener("touchstart", handleInteraction);
+            document.removeEventListener("touchmove", handleInteraction);
+            document.removeEventListener("pointerdown", handleInteraction);
+          })
+          .catch((err) => {
+            console.log("Audio play error:", err.message);
+            setBrowserMuted(true);
+            hasPlayed = false; // Reset flag on error to retry
+          });
       }
     };
 
+    // Add multiple event types for better mobile support
     document.addEventListener("click", handleInteraction);
-    document.addEventListener("touchstart", handleInteraction);
-    document.addEventListener("scroll", handleInteraction);
-    document.addEventListener("wheel", handleInteraction);
+    document.addEventListener("touchstart", handleInteraction, { passive: true });
+    document.addEventListener("touchmove", handleInteraction, { passive: true });
+    document.addEventListener("pointerdown", handleInteraction);
 
     return () => {
       document.removeEventListener("click", handleInteraction);
       document.removeEventListener("touchstart", handleInteraction);
-      document.removeEventListener("scroll", handleInteraction);
-      document.removeEventListener("wheel", handleInteraction);
+      document.removeEventListener("touchmove", handleInteraction);
+      document.removeEventListener("pointerdown", handleInteraction);
     };
   }, []);
 
@@ -97,10 +113,14 @@ export default function Index() {
       </audio>
       <button
         onClick={() => setAudioMuted(!audioMuted)}
-        className="fixed bottom-6 right-6 z-50 p-3 hover:text-graphite transition"
-        title={audioMuted ? "Unmute" : "Mute"}
+        className={`fixed bottom-6 right-6 z-50 p-3 transition ${
+          browserMuted 
+            ? "opacity-50 cursor-not-allowed" 
+            : "hover:text-graphite"
+        }`}
+        title={browserMuted ? "Audio blocked by browser" : (audioMuted ? "Unmute" : "Mute")}
       >
-        {audioMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+        {audioMuted || browserMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
       </button>
       <Nav />
       <Hero opened={opened} setOpened={setOpened} />
