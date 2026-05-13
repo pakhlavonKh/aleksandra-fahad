@@ -54,41 +54,45 @@ export default function Index() {
   useReveal();
 
   useEffect(() => {
-    // Play audio on mount/reload
-    const playAudio = () => {
+    // Handle user interaction to start audio
+    const handleInteraction = () => {
       if (audioRef.current) {
+        audioRef.current.muted = false;
         audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(() => {
-          console.log("Autoplay blocked by browser - audio muted or requires interaction");
+        audioRef.current.play().catch((err) => {
+          console.log("Audio play failed:", err.message);
         });
+        // Remove all listeners after first interaction
+        document.removeEventListener("click", handleInteraction);
+        document.removeEventListener("touchstart", handleInteraction);
+        document.removeEventListener("scroll", handleInteraction);
+        document.removeEventListener("wheel", handleInteraction);
       }
     };
-    
-    // Try to play immediately
-    playAudio();
-    
-    // Try again after a short delay in case element isn't ready
-    const timer = setTimeout(playAudio, 300);
-    
-    return () => clearTimeout(timer);
+
+    document.addEventListener("click", handleInteraction);
+    document.addEventListener("touchstart", handleInteraction);
+    document.addEventListener("scroll", handleInteraction);
+    document.addEventListener("wheel", handleInteraction);
+
+    return () => {
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
+      document.removeEventListener("scroll", handleInteraction);
+      document.removeEventListener("wheel", handleInteraction);
+    };
   }, []);
 
   useEffect(() => {
-    // Update mute state
+    // Update muted state
     if (audioRef.current) {
       audioRef.current.muted = audioMuted;
-      // Ensure audio continues playing when toggling mute
-      if (!audioMuted && audioRef.current.paused) {
-        audioRef.current.play().catch(() => {
-          console.log("Could not resume audio");
-        });
-      }
     }
   }, [audioMuted]);
 
   return (
     <main className="paper-texture min-h-screen text-foreground">
-      <audio ref={audioRef} autoPlay preload="auto" style={{ display: "none" }}>
+      <audio ref={audioRef} preload="auto" style={{ display: "none" }}>
         <source src={takeOff} type="audio/mpeg" />
       </audio>
       <button
