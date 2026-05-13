@@ -974,7 +974,7 @@ function RSVP() {
       };
 
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycby_OlXQZXkIdORHgNKe6csArZFnfKY_rKugigTwdwyDFsexIBXGou-kshBcm97kwkTn/exec",
+        "https://script.google.com/macros/s/AKfycbwqeA6oDOmc1WRba8X7z9Ne0DzI2sXj3cpXj1nggBmm1tgyK9_TWzDpjFJZrtLjtQd6/exec",
         {
           method: "POST",
           headers: {
