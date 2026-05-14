@@ -11,7 +11,7 @@ import takeOff from "@/assets/audio.mp3";
 
 function useReveal() {
   useEffect(() => {
-    const els = document.querySelectorAll(".reveal, .draw-line, .animated-plane");
+    const els = document.querySelectorAll(".reveal, .draw-line");
     if (typeof IntersectionObserver === "undefined") {
       els.forEach((el) => el.classList.add("is-visible"));
       return;
@@ -633,21 +633,19 @@ function Map() {
           </text>
         </g>
 
-        {/* flying plane - CSS animated */}
-        <image
-          className="animated-plane"
-          href={plane}
-          x="-12"
-          y="-12"
-          width="32"
-          height="32"
-          style={
-            {
-              offsetPath: 'path("M60 80 Q 180 140 245 220")',
-              offsetDistance: "0%",
-            } as React.CSSProperties
-          }
-        />
+        {/* flying plane - SVG animateMotion */}
+        <g>
+          <animateMotion dur="4s" repeatCount="indefinite" begin="0.5s">
+            <mpath href="#route" />
+          </animateMotion>
+          <image
+            href={plane}
+            x="-12"
+            y="-12"
+            width="32"
+            height="32"
+          />
+        </g>
       </svg>
     </div>
   );

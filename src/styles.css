@@ -180,16 +180,4 @@
     transition: stroke-dashoffset 2.5s ease-out;
   }
   .draw-line.is-visible { stroke-dashoffset: 0; }
-  .animated-plane {
-    animation: moveAlongPath 4s linear infinite paused;
-  }
-  .animated-plane.is-visible {
-    animation-play-state: running;
-    animation-delay: 0.5s;
-  }
-}
-
-@keyframes moveAlongPath {
-  0% { offset-distance: 0%; }
-  100% { offset-distance: 100%; }
 }
