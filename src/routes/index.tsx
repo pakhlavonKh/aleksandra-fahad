@@ -306,7 +306,7 @@ function MiniTicket() {
         <div className="font-mono text-[8px] tracking-[0.3em] text-muted-foreground uppercase">
           Boarding
         </div>
-        <div className="font-display text-xl">TAS → LOV</div>
+        <div className="font-display text-xl">TAS → Love Story</div>
       </div>
       <div className="barcode w-20 h-10" />
     </div>
@@ -360,7 +360,7 @@ function BoardingPass() {
             {[
               { label: "Пассажир", value: "Уважаемый гость", mono: false },
               { label: "От", value: "TAS · Ташкент" },
-              { label: "К", value: "LOV · Любовь" },
+              { label: "К", value: "Love Story · Любовь" },
               { label: "Дата", value: "26 · 06 · 2026" },
               { label: "Время посадки", value: "15:30" },
               { label: "Церемония", value: "16:00" },
@@ -413,7 +413,7 @@ function BoardingPass() {
             </div>
             <div className="font-display text-xl mt-1">A · F</div>
             <div className="mt-6 space-y-2 font-mono text-[10px] tracking-[0.2em] uppercase">
-              <div>TAS → LOV</div>
+              <div>TAS → Love Story</div>
               <div>26 · 06 · 26</div>
               <div>Gate 01 · Seat 1A</div>
             </div>
@@ -1213,7 +1213,7 @@ function Footer() {
           </div>
           <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/50 space-y-1 text-right">
             <div>Wedding Airlines · AF 0626</div>
-            <div>TAS → LOV · Gate 01</div>
+            <div>TAS → Love Story · Gate 01</div>
             <div>26 · 06 · 2026 · 16:00</div>
           </div>
         </div>
