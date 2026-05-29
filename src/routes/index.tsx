@@ -244,6 +244,12 @@ function Hero({ opened, setOpened }: { opened: boolean; setOpened: (v: boolean) 
       <div className="mt-12 font-mono text-[9px] tracking-[0.4em] uppercase text-muted-foreground">
         ↓ Прокрутите для посадочного талона
       </div>
+      <a
+        href="#rsvp"
+        className="mt-5 font-mono text-[15px] text-center tracking-[0.3em] uppercase text-foreground underline underline-offset-4 hover:text-graphite transition"
+      >
+        Пожалуйста, заполните форму подтверждения
+      </a>
     </section>
   );
 }
@@ -362,8 +368,8 @@ function BoardingPass() {
               { label: "От", value: "TAS · Ташкент" },
               { label: "К", value: "Love Story · Любовь" },
               { label: "Дата", value: "26 · 06 · 2026" },
-              { label: "Время посадки", value: "15:30" },
-              { label: "Церемония", value: "16:00" },
+              { label: "Время посадки", value: "19:00" },
+              { label: "Церемония", value: "19:00" },
               { label: "Выход", value: "01" },
               { label: "Место", value: "1A" },
               { label: "Класс", value: "First" },
