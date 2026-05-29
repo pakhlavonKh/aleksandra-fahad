@@ -470,19 +470,10 @@ function QrCode() {
 /* ---------------- Journey / Departures ---------------- */
 function Journey() {
   const rows = [
-    { time: "15:00", code: "AF 01", title: "Сбор гостей", gate: "A", status: "On Time" },
-    { time: "16:00", code: "AF 02", title: "Церемония", gate: "B", status: "Boarding" },
-    { time: "17:00", code: "AF 03", title: "Фотосессия", gate: "C", status: "Scheduled" },
-    {
-      time: "18:00",
-      code: "AF 04",
-      title: "Приветственный коктейль",
-      gate: "D",
-      status: "Scheduled",
-    },
-    { time: "19:00", code: "AF 05", title: "Ужин", gate: "E", status: "Scheduled" },
-    { time: "21:00", code: "AF 06", title: "Первый танец", gate: "F", status: "Scheduled" },
-    { time: "23:00", code: "AF 07", title: "After Party", gate: "G", status: "Scheduled" },
+    { time: "19:00", code: "AF 01", title: "Встреча гостей — сбор возле арки", gate: "—", status: "Scheduled" },
+    { time: "19:30", code: "AF 02", title: "Регистрация", gate: "—", status: "Scheduled" },
+    { time: "19:45", code: "AF 03", title: "Группа, диджей и конкурсы", gate: "—", status: "Scheduled" },
+    { time: "23:00", code: "AF 04", title: "Закрытие вечера", gate: "—", status: "Scheduled" },
   ];
   return (
     <section id="journey" className="ink-texture text-paper py-32 px-6">
