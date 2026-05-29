@@ -924,28 +924,21 @@ function RSVP() {
     phone: "",
     ppl: "01",
     att: "yes",
-    wishes: "",
     website: "", // Honeypot field
   });
 
   const isFormValid = formData.name.trim().length > 0 && formData.phone.trim().length > 0;
 
-  // Check localStorage on mount to restore submission state
-  useEffect(() => {
-    const isSubmitted = localStorage.getItem("rsvp_submitted");
-    if (isSubmitted === "true") {
-      setSubmitted(true);
-    }
-  }, []);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setSubmitted(false);
     setError(null);
   };
 
   const handleRadioChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setSubmitted(false);
     setError(null);
   };
 
@@ -964,12 +957,11 @@ function RSVP() {
         phone: formData.phone,
         guests: formData.ppl,
         attendance: attendanceText,
-        wishes: formData.wishes || "-",
         website: formData.website, // Honeypot field
       };
 
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbwqeA6oDOmc1WRba8X7z9Ne0DzI2sXj3cpXj1nggBmm1tgyK9_TWzDpjFJZrtLjtQd6/exec",
+        "https://script.google.com/macros/s/AKfycbxg3szRTjxmQC1OLUrKOj2nNI6N4khbxTXrD_czKDgxQkcBlOIIDtpnfIQUcxf7auni/exec",
         {
           method: "POST",
           headers: {
@@ -986,7 +978,6 @@ function RSVP() {
       const result = await response.json();
 
       if (result.success === true) {
-        localStorage.setItem("rsvp_submitted", "true");
         setSubmitted(true);
       } else {
         setError(result.error || "Ошибка при отправке формы. Попробуйте позже.");
@@ -1007,7 +998,7 @@ function RSVP() {
 
         <form
           onSubmit={handleSubmit}
-          className="reveal mt-16 bg-card border hairline border-border p-10 md:p-14 space-y-10"
+          className="mt-16 bg-card border hairline border-border p-10 md:p-14 space-y-10"
         >
           <div className="flex items-start justify-between border-b hairline border-border pb-6">
             <div>
@@ -1024,12 +1015,12 @@ function RSVP() {
           </div>
 
           {error && (
-            <div className="reveal bg-destructive/10 border border-destructive/30 rounded-sm p-4">
+            <div className="bg-destructive/10 border border-destructive/30 rounded-sm p-4">
               <p className="font-mono text-[10px] tracking-[0.2em] text-destructive">{error}</p>
             </div>
           )}
 
-          <div className="reveal" style={{ animationDelay: "0.5s" }}>
+          <div>
             <Label>Фамилия и имя</Label>
             <input
               type="text"
@@ -1037,12 +1028,12 @@ function RSVP() {
               value={formData.name}
               onChange={handleInputChange}
               placeholder="ИВАНОВ ИВАН"
-              disabled={submitted}
+              disabled={loading}
               className="w-full mt-3 bg-transparent border-b hairline border-border focus:border-foreground outline-none py-3 font-mono text-sm tracking-[0.05em] disabled:opacity-50"
             />
           </div>
 
-          <div className="reveal" style={{ animationDelay: "1s" }}>
+          <div>
             <Label>Телефон</Label>
             <input
               type="tel"
@@ -1050,12 +1041,12 @@ function RSVP() {
               value={formData.phone}
               onChange={handleInputChange}
               placeholder="+998 (90) 000-00-00"
-              disabled={submitted}
+              disabled={loading}
               className="w-full mt-3 bg-transparent border-b hairline border-border focus:border-foreground outline-none py-3 font-mono text-sm tracking-[0.05em] disabled:opacity-50"
             />
           </div>
 
-          <div className="reveal" style={{ animationDelay: "1.5s" }}>
+          <div>
             <Label>Количество персон</Label>
             <div className="flex gap-3 mt-3">
               {["01", "02", "03", "04+"].map((n) => (
@@ -1066,7 +1057,7 @@ function RSVP() {
                     value={n}
                     checked={formData.ppl === n}
                     onChange={(e) => handleRadioChange("ppl", e.target.value)}
-                    disabled={submitted}
+                    disabled={loading}
                     className="peer sr-only"
                   />
                   <div className="border hairline border-border py-4 text-center font-mono text-sm tracking-[0.2em] cursor-pointer peer-checked:bg-foreground peer-checked:text-paper transition disabled:opacity-50">
@@ -1077,7 +1068,7 @@ function RSVP() {
             </div>
           </div>
 
-          <div className="reveal" style={{ animationDelay: "2s" }}>
+          <div>
             <Label>Подтверждаю присутствие</Label>
             <div className="grid grid-cols-2 gap-3 mt-3">
               {["Да, лечу", "К сожалению, нет"].map((n, i) => (
@@ -1088,7 +1079,7 @@ function RSVP() {
                     value={i === 0 ? "yes" : "no"}
                     checked={formData.att === (i === 0 ? "yes" : "no")}
                     onChange={(e) => handleRadioChange("att", e.target.value)}
-                    disabled={submitted}
+                    disabled={loading}
                     className="peer sr-only"
                   />
                   <div className="border hairline border-border py-4 text-center font-mono text-[11px] tracking-[0.25em] uppercase cursor-pointer peer-checked:bg-foreground peer-checked:text-paper transition disabled:opacity-50">
@@ -1097,19 +1088,6 @@ function RSVP() {
                 </label>
               ))}
             </div>
-          </div>
-
-          <div className="reveal" style={{ animationDelay: "2.5s" }}>
-            <Label>Особые пожелания</Label>
-            <textarea
-              rows={3}
-              name="wishes"
-              value={formData.wishes}
-              onChange={handleInputChange}
-              disabled={submitted}
-              className="w-full mt-3 bg-transparent border-b hairline border-border focus:border-foreground outline-none py-3 font-mono text-sm tracking-[0.05em] resize-none disabled:opacity-50"
-              placeholder="—"
-            />
           </div>
 
           {/* Honeypot anti-spam field - hidden from users */}
@@ -1125,17 +1103,16 @@ function RSVP() {
           />
 
           <div
-            className="pt-6 border-t hairline border-border flex flex-col md:flex-row md:items-center justify-between gap-6 reveal"
-            style={{ animationDelay: "3s" }}
+            className="pt-6 border-t hairline border-border flex flex-col md:flex-row md:items-center justify-between gap-6"
           >
             <div className="font-mono text-[9px] tracking-[0.3em] uppercase text-muted-foreground">
               Подпись: ___________________ &nbsp; · &nbsp; Дата: 09 · 08 · 2026
             </div>
             <button
               type="submit"
-              disabled={!isFormValid || submitted || loading}
+              disabled={!isFormValid || loading}
               className={`font-mono text-[11px] tracking-[0.4em] uppercase px-10 py-4 transition-colors duration-500 ${
-                isFormValid && !submitted && !loading
+                isFormValid && !loading
                   ? "bg-foreground text-paper hover:bg-graphite cursor-pointer"
                   : "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
               }`}
