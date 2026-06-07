@@ -758,9 +758,8 @@ function CountdownAndCalendar() {
     return () => clearInterval(timer);
   }, []);
 
-  const weddingDate = new Date("2026-06-26");
-  const daysInMonth = new Date(2026, 5, 0).getDate();
-  const firstDayOfMonth = new Date(2026, 5, 1).getDay();
+  const daysInMonth = new Date(2026, 6, 0).getDate();
+  const firstDayOfMonth = (new Date(2026, 5, 1).getDay() + 6) % 7;
   const calendarDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
   return (
