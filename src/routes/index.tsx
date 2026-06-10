@@ -368,8 +368,8 @@ function BoardingPass() {
               { label: "От", value: "TAS · Ташкент" },
               { label: "К", value: "Love Story · Любовь" },
               { label: "Дата", value: "26 · 06 · 2026" },
-              { label: "Время посадки", value: "19:00" },
-              { label: "Церемония", value: "19:00" },
+              { label: "Время посадки", value: "18:00" },
+              { label: "Церемония", value: "18:30" },
               { label: "Выход", value: "01" },
               { label: "Место", value: "1A" },
               { label: "Класс", value: "First" },
@@ -476,10 +476,9 @@ function QrCode() {
 /* ---------------- Journey / Departures ---------------- */
 function Journey() {
   const rows = [
-    { time: "19:00", code: "AF 01", title: "Встреча гостей — сбор возле арки", gate: "—", status: "Scheduled" },
-    { time: "19:30", code: "AF 02", title: "Регистрация", gate: "—", status: "Scheduled" },
-    { time: "19:45", code: "AF 03", title: "Группа, диджей и конкурсы", gate: "—", status: "Scheduled" },
-    { time: "23:00", code: "AF 04", title: "Закрытие вечера", gate: "—", status: "Scheduled" },
+    { time: "18:00", code: "AF 01", title: "Сбор у купола", gate: "—", status: "Scheduled" },
+    { time: "18:30", code: "AF 02", title: "Бракосочетание", gate: "—", status: "Scheduled" },
+    { time: "19:00", code: "AF 03", title: "Свадебное застолье в ресторане", gate: "—", status: "Scheduled" },
   ];
   return (
     <section id="journey" className="ink-texture text-paper py-32 px-6">
@@ -739,7 +738,7 @@ function CountdownAndCalendar() {
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const weddingDate = new Date("2026-06-26T16:00:00").getTime();
+      const weddingDate = new Date("2026-06-26T18:00:00").getTime();
       const now = new Date().getTime();
       const difference = weddingDate - now;
 
@@ -782,7 +781,7 @@ function CountdownAndCalendar() {
           </div>
           <div className="text-center pt-8 border-t hairline border-border">
             <div className="font-display text-2xl md:text-3xl text-graphite">
-              26 · 06 · 2026 · 16:00
+              26 · 06 · 2026 · 18:00
             </div>
           </div>
         </div>
